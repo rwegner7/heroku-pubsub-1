@@ -5,8 +5,8 @@ const Configuration = require('./utils/configuration.js'),
     OrderRestResource = require('./api/orderRestResource.js'),
     LWR = require('lwr');
 
-const ORDER_CDC_TOPIC = '/data/Order__ChangeEvent'; //TODO - how to make this reusable/ dynamic
-const MANUFACTURING_PE_TOPIC = '/event/Carbon_Comparison__e'; //TODO - how to make this reusable/ dynamic
+const ORDER_CDC_TOPIC = '/data/Order__ChangeEvent';
+const MANUFACTURING_PE_TOPIC = '/event/Manufacturing_Event__e';
 
 async function start() {
     Configuration.checkConfig();
@@ -22,15 +22,9 @@ async function start() {
     await sfClient.connect(
         Configuration.getSfLoginUrl(),
         Configuration.getSfUsername(),
-        Configuration.getSfClientId(),
-        Configuration.getSfJwtKey()
-    );
-    /*await sfClient.connect(
-        Configuration.getSfLoginUrl(),
-        Configuration.getSfUsername(),
         Configuration.getSfSecuredPassword(),
         Configuration.getSfApiVersion()
-    );*/
+    );
 
     // Use Pub Sub API to retrieve streaming event schemas
     const pubSub = new PubSubService(
@@ -69,7 +63,8 @@ async function start() {
         const eventData = {
             CreatedDate: Date.now(),
             CreatedById: sfClient.client.userInfo.id,
-            Current_Vehicle__c: { string: orderId }
+            Order_Id__c: { string: orderId },
+            Status__c: { string: status }
         };
         await pubSub.publish(
             MANUFACTURING_PE_TOPIC,
