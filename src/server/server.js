@@ -39,8 +39,8 @@ async function start() {
 
     // Subscribe to Change Data Capture events on Reseller Order records
     pubSub.subscribe(ORDER_CDC_TOPIC, orderCdcSchema, 10, (cdcEvent) => {
-        const modelYear = cdcEvent.payload.Model_Year__c?.string;
-        console.log('received >>> ' + modelYear);
+        //const modelYear = cdcEvent.payload.Model_Year__c?.string;
+        console.log('received >>> ' + JSON.stringify(cdcEvent));
         //const header = cdcEvent.payload.ChangeEventHeader;
         // Filter events related to order status updates
         /*if (header.changeType === 'UPDATE' && status) {
