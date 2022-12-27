@@ -5,7 +5,7 @@ const Configuration = require('./utils/configuration.js'),
     OrderRestResource = require('./api/orderRestResource.js'),
     LWR = require('lwr');
 
-const ORDER_CDC_TOPIC = '/data/Order__ChangeEvent';
+const ORDER_CDC_TOPIC = '/event/Carbon_Comparison__e';
 const MANUFACTURING_PE_TOPIC = '/event/Manufacturing_Event__e';
 
 async function start() {
@@ -39,10 +39,11 @@ async function start() {
 
     // Subscribe to Change Data Capture events on Reseller Order records
     pubSub.subscribe(ORDER_CDC_TOPIC, orderCdcSchema, 10, (cdcEvent) => {
-        const status = cdcEvent.payload.Status__c?.string;
-        const header = cdcEvent.payload.ChangeEventHeader;
+        const modelYear = cdcEvent.payload.Model_Year__c?.string;
+        console.log('received >>> ' + modelYear);
+        //const header = cdcEvent.payload.ChangeEventHeader;
         // Filter events related to order status updates
-        if (header.changeType === 'UPDATE' && status) {
+        /*if (header.changeType === 'UPDATE' && status) {
             header.recordIds.forEach((orderId) => {
                 // Notify client via WebSocket
                 const message = {
@@ -54,7 +55,7 @@ async function start() {
                 };
                 wss.broadcast(JSON.stringify(message));
             });
-        }
+        }*/
     });
 
     // Handle incoming WS events
